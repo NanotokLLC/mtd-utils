@@ -85,14 +85,14 @@ struct peb_list {
 /* TODO(sahne): useful default value ? */
 char *ubi_dev = "/dev/ubi0";
 
-static int64_t get_num_pebs(int dev_num)
+static int64_t get_num_pebs(const char *ubi_dev)
 {
 	libubi_t libubi = libubi_open();
 	struct ubi_dev_info dev_info;
 	int err;
-	err = ubi_get_dev_info1(libubi, dev_num, &dev_info);
+	err = ubi_get_dev_info(libubi, ubi_dev, &dev_info);
 	if (err) {
-		log("Could not get ubi info for device %d", dev_num);
+		log("Could not get ubi info for device %s", ubi_dev);
 		return -1;
 	}
 	libubi_close(libubi);
@@ -398,7 +398,7 @@ int main(int argc, char **argv)
 	}
 
 	/* get peb info */
-	num_pebs = get_num_pebs(0);
+	num_pebs = get_num_pebs(ubi_dev);
 	if (num_pebs < 1) {
 		log("Invalid number of PEBs");
 		return 1;
